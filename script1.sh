@@ -17,7 +17,7 @@ else
 
 	currsize=$(du -s "$path" --block-size=K | awk '{print $1}' | sed 's/K//')
     while [ "$currsize" -ge "$nec" ]; do
-		d=$(ls --sort=time | head -n 1)
+		d=$(ls --sort=time | tail -n 1)
 		mv "$d" ~/BACKUP/
 		cd ~/BACKUP
 		tar -czvf "${d}.tar.gz" "$d"
