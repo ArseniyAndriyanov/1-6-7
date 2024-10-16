@@ -18,7 +18,7 @@ run_backup_test() {
     backupsize=$(du -s "$backup_path" --block-size=K | awk '{print $1}')
 
     if [ "$test_number" -eq 1 ] || [ "$test_number" -eq 4 ]; then
-        if [ "$foldersize" -lt 204800 ] && [ -z "$(ls -A "$backup_path")" ]; then
+        if [ "$foldersize" -lt 204800 ] && [ -z "$(ls "$backup_path")" ]; then
             echo "Тест $test_number пройден. Вес папки log: $foldersize K, вес папки backup: $backupsize"
         else
             echo "Тест $test_number не пройден. Вес папки log: $foldersize K, вес папки backup: $backupsize"
@@ -31,8 +31,8 @@ run_backup_test() {
         fi
     fi
 
-    rm -rf "$test_path/"*
-    rm -rf "$backup_path/"*
+    rm -f "$test_path/"*
+    rm -f "$backup_path/"*
     echo ""
 }
 
@@ -49,10 +49,10 @@ sleep 2
 echo "Тест 3: 69 файлов весом >700МБ в папке"
 for ((i=1; i<70; i++)); do
     fallocate -l 11264K "$test_path/file$i.txt"
+    sleep 0.1
 done
 run_backup_test 3
 sleep 2
 
 echo "Тест 4: Пустая папка"
 run_backup_test 4
-sleep 2
