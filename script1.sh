@@ -6,7 +6,7 @@ nec=204800
 
 path="/home/andryanov_arseny/LOG"
 
-foldersize=$(du -hs "$path" --block-size=K | awk '{print $1}' | sed 's/K//')
+foldersize=$(du -s "$path" --block-size=K | awk '{print $1}' | sed 's/K//')
 fullness=$(bc <<< "scale=3; ($foldersize / $treshold) * 100")
 
 if (( $(echo "$fullness <= $percentage" | bc -l) )); then
@@ -15,16 +15,15 @@ else
     mkdir -p ~/BACKUP
     cd "$path"
 
-	currsize=$(du -hs "$path" --block-size=K | awk '{print $1}' | sed 's/K//')
+	currsize=$(du -s "$path" --block-size=K | awk '{print $1}' | sed 's/K//')
     while [ "$currsize" -ge "$nec" ]; do
-		ls --sort=time | tail -n 1 | while read -r d; do
-			mv "$d" ~/BACKUP/
-			cd ~/BACKUP
-			tar -czvf "${d}.tar.gz" "$d"
-			rm -f "$d"
-			cd "$path"
-		done
-		currsize=$(du -hs "$path" --block-size=K | awk '{print $1}' | sed 's/K//')
+		d=$(ls --sort=time | head -n 1)
+		mv "$d" ~/BACKUP/
+		cd ~/BACKUP
+		tar -czvf "${d}.tar.gz" "$d"
+		rm -f "$d"
+		cd "$path"
+		currsize=$(du -s "$path" --block-size=K | awk '{print $1}' | sed 's/K//')
 	done
     echo "Файлы успешно перемещены и заархивированы"
 fi

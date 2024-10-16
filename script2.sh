@@ -4,18 +4,18 @@ test_path="/home/andryanov_arseny/LOG"
 backup_path="/home/andryanov_arseny/BACKUP"
 
 run_original_script() {
-    bash /home/andryanov_arseny/script1.sh
+    ./script1.sh
 }
 
 run_backup_test() {
     local test_number=$1
-    foldersize=$(du -hs "$test_path" --block-size=K | awk '{print $1}')
-    backupsize=$(du -hs "$backup_path" --block-size=K | awk '{print $1}')
+    foldersize=$(du -s "$test_path" --block-size=K | awk '{print $1}')
+    backupsize=$(du -s "$backup_path" --block-size=K | awk '{print $1}')
     echo "Изначальный вес папки log: $foldersize, папки backup: $backupsize"
     run_original_script
 
     foldersize=$(du -k "$test_path" | cut -f1)
-    backupsize=$(du -hs "$backup_path" --block-size=K | awk '{print $1}')
+    backupsize=$(du -s "$backup_path" --block-size=K | awk '{print $1}')
 
     if [ "$test_number" -eq 1 ] || [ "$test_number" -eq 4 ]; then
         if [ "$foldersize" -lt 204800 ] && [ -z "$(ls -A "$backup_path")" ]; then
@@ -54,6 +54,5 @@ run_backup_test 3
 sleep 2
 
 echo "Тест 4: Пустая папка"
-rm -rf "$test_path/"*
 run_backup_test 4
 sleep 2
